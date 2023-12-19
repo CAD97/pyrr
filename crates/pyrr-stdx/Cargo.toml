@@ -1,0 +1,7 @@
+[package]
+name = "pyrr-stdx"
+edition = "2021"
+
+lints.workspace = true
+version.workspace = true
+rust-version.workspace = true

@@ -1,0 +1,139 @@
+[workspace]
+resolver = "2"
+members = ["crates/*"]
+
+[workspace.package]
+version = "0.0.0"
+rust-version = "1.74.1"
+
+[workspace.dependencies]
+pyrr-core = { path = "pyrr/core" }
+pyrr-stdx = { path = "pyrr/stdx" }
+
+ahash = { version = "0.8.6", default-features = false, features = [
+    "runtime-rng",
+    "std",
+] }
+hashbrown = { version = "0.14.3", default-features = false, features = [
+    "ahash",
+    "equivalent",
+] }
+indexmap = { version = "2.1.0", default-features = false, features = ["std"] }
+nalgebra = { version = "0.32.3", default-features = false, features = [
+    "convert-bytemuck",
+    "std",
+] }
+rand = { version = "0.8.5", default-features = false, features = [
+    "min_const_gen",
+    "std",
+] }
+rapier2d = { version = "0.17.2", default-features = false, features = [
+    "dim2",
+    "enhanced-determinism",
+    "f32",
+] }
+wasmtime = { version = "15.0.1", default-features = false, features = [
+    "addr2line",
+    "coredump",
+    "cache",
+    "cranelift",
+    "component-model",
+    "debug-builtins",
+    "demangle",
+    "parallel-compilation",
+    "pooling-allocator",
+] }
+wyhash = { version = "0.5.0", default-features = false, features = [] }
+
+
+[lints.rust]
+unsafe_code = "deny"
+# rust_2018_idioms
+elided_lifetimes_in_paths = "warn"
+explicit_outlives_requirements = "warn"
+unused_extern_crates = "warn"
+[lints.clippy]
+# clippy::cargo
+multiple_crate_versions = "warn"
+negative_feature_names = "warn"
+redundant_feature_names = "warn"
+wildcard_dependencies = "warn"
+# clippy::nursery
+empty_line_after_doc_comments = "warn"
+empty_line_after_outer_attr = "warn"
+imprecise_flops = "warn"
+iter_with_drain = "warn"
+manual_clamp = "warn"
+nonstandard_macro_braces = "warn"
+significant_drop_in_scrutinee = "warn"
+significant_drop_tightening = "warn"
+suboptimal_flops = "warn"
+suspicious_operation_groupings = "warn"
+useless_let_if_seq = "warn"
+# clippy::pedantic
+borrow_as_ptr = "warn"
+case_sensitive_file_extension_comparisons = "warn"
+cast_lossless = "warn"
+cast_possible_truncation = "warn"
+cast_possible_wrap = "warn"
+cast_precision_loss = "warn"
+cast_sign_loss = "warn"
+checked_conversions = "warn"
+copy_iterator = "warn"
+doc_link_with_quotes = "warn"
+ignored_unit_patterns = "warn"
+large_stack_arrays = "warn"
+large_types_passed_by_value = "warn"
+macro_use_imports = "warn"
+manual_instant_elapsed = "warn"
+manual_let_else = "warn"
+manual_ok_or = "warn"
+manual_string_new = "warn"
+map_unwrap_or = "warn"
+needless_continue = "warn"
+no_mangle_with_rust_abi = "warn"
+option_option = "warn"
+ptr_as_ptr = "warn"
+ptr_cast_constness = "warn"
+range_minus_one = "warn"
+redundant_closure_for_method_calls = "warn"
+redundant_else = "warn"
+ref_option_ref = "warn"
+same_functions_in_if_condition = "warn"
+semicolon_if_nothing_returned = "warn"
+should_panic_without_expect = "warn"
+struct_excessive_bools = "warn"
+too_many_lines = "warn"
+transmute_ptr_to_ptr = "warn"
+trivially_copy_pass_by_ref = "warn"
+unicode_not_nfc = "warn"
+unreadable_literal = "warn"
+unsafe_derive_deserialize = "warn"
+verbose_bit_mask = "warn"
+wildcard_imports = "warn"
+zero_sized_map_values = "warn"
+# clippy::restriction
+as_underscore = "warn"
+empty_drop = "warn"
+exit = "warn"
+expect_used = "warn"
+lossy_float_literal = "warn"
+min_ident_chars = "warn"
+missing_assert_message = "warn"
+print_stdout = "warn"
+print_stderr = "warn"
+rest_pat_in_fully_bound_structs = "warn"
+suspicious_xor_used_as_pow = "warn"
+todo = "warn"
+undocumented_unsafe_blocks = "warn"
+unimplemented = "warn"
+unnecessary_safety_comment = "warn"
+unnecessary_safety_doc = "warn"
+unneeded_field_pattern = "warn"
+unseparated_literal_suffix = "warn"
+
+
+[profile.dev]
+
+[profile.dev.build-override."*"]
+opt-level = 2

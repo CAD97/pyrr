@@ -1,0 +1,7 @@
+avoid-breaking-exported-api = false
+doc-valid-indents = [".."]
+trivial-copy-size-limit = 256
+pass-by-value-size-limit = 256
+allow-expect-in-tests = true
+allow-dbg-in-tests = true
+allow-private-module-inception = true
