@@ -1,0 +1,12 @@
+# Text source files
+*.md        text
+*.nu        text
+*.kdl       text
+*.rs        text
+*.toml      text
+*.txt       text
+*.wit       text
+
+# Binary asset files
+*.pdn filter=lfs diff=lfs merge=lfs -text
+*.png filter=lfs diff=lfs merge=lfs -text
