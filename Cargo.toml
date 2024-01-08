@@ -2,37 +2,75 @@
 resolver = "2"
 members = ["crates/*"]
 
+
 [workspace.package]
 version = "0.0.0"
-rust-version = "1.74.1"
+rust-version = "1.75.0"
+
 
 [workspace.dependencies]
 pyrr-core = { path = "pyrr/core" }
+pyrr-libm = { path = "pyrr/libm" }
 pyrr-stdx = { path = "pyrr/stdx" }
 
-ahash = { version = "0.8.6", default-features = false, features = [
-    "runtime-rng",
-    "std",
-] }
-hashbrown = { version = "0.14.3", default-features = false, features = [
-    "ahash",
-    "equivalent",
-] }
-indexmap = { version = "2.1.0", default-features = false, features = ["std"] }
+
+[workspace.dependencies.ahash]
+version = "0.8.6"
+default-features = false
+features = ["runtime-rng", "std"]
+
+[workspace.dependencies.bytemuck]
+version = "1.14.0"
+default-features = false
+features = ["derive", "align_offset", "min_const_generics"]
+
+[workspace.dependencies.crevice]
+version = "0.14.0"
+default-features = false
+features = ["std", "nalgebra"]
+
+[workspace.dependencies.hashbrown]
+version = "0.14.3"
+default-features = false
+features = ["ahash", "equivalent"]
+
+[workspace.dependencies.indexmap]
+version = "2.1.0"
+default-features = false
+features = ["std"]
+
+[workspace.dependencies.libm]
+version = "0.2.8"
+default-features = false
+features = []
+
+[workspace.dependencies.nalgebra]
 nalgebra = { version = "0.32.3", default-features = false, features = [
+    "std",
+    "macros",
+    "convert-mint",
     "convert-bytemuck",
-    "std",
 ] }
-rand = { version = "0.8.5", default-features = false, features = [
-    "min_const_gen",
-    "std",
-] }
-rapier2d = { version = "0.17.2", default-features = false, features = [
-    "dim2",
-    "enhanced-determinism",
-    "f32",
-] }
-wasmtime = { version = "15.0.1", default-features = false, features = [
+
+[workspace.dependencies.paste]
+version = "1.0.14"
+default-features = false
+features = []
+
+[workspace.dependencies.rand]
+version = "0.8.5"
+default-features = false
+features = ["std", "min_const_gen"]
+
+[workspace.dependencies.rapier2d]
+version = "0.17.2"
+default-features = false
+features = ["dim2", "f32", "enhanced-determinism"]
+
+[workspace.dependencies.wasmtime]
+version = "16.0.0"
+default-features = false
+features = [
     "addr2line",
     "coredump",
     "cache",
@@ -42,17 +80,42 @@ wasmtime = { version = "15.0.1", default-features = false, features = [
     "demangle",
     "parallel-compilation",
     "pooling-allocator",
-] }
-wyhash = { version = "0.5.0", default-features = false, features = [] }
+]
+
+[workspace.dependencies.wit-bindgen]
+version = "0.16.0"
+default-features = false
+features = ["macros"]
+
+[workspace.dependencies.wyhash]
+version = "0.5.0"
+default-features = false
+features = []
 
 
-[lints.rust]
+[profile.dev]
+opt-level = 1
+
+[profile.dev.package."*"]
+# opt-level = 2 # disables monomorphization sharing
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+
+[profile.wasm-component]
+inherits = "release"
+strip = "symbols"
+panic = "abort"
+
+
+[workspace.lints.rust]
 unsafe_code = "deny"
 # rust_2018_idioms
 elided_lifetimes_in_paths = "warn"
 explicit_outlives_requirements = "warn"
 unused_extern_crates = "warn"
-[lints.clippy]
+[workspace.lints.clippy]
 # clippy::cargo
 multiple_crate_versions = "warn"
 negative_feature_names = "warn"
@@ -131,9 +194,3 @@ unnecessary_safety_comment = "warn"
 unnecessary_safety_doc = "warn"
 unneeded_field_pattern = "warn"
 unseparated_literal_suffix = "warn"
-
-
-[profile.dev]
-
-[profile.dev.build-override."*"]
-opt-level = 2

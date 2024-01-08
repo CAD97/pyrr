@@ -1,7 +1,8 @@
+lints.workspace = true
+
 [package]
 name = "pyrr-core"
 edition = "2021"
 
-lints.workspace = true
 version.workspace = true
 rust-version.workspace = true

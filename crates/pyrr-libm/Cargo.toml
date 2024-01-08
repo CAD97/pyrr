@@ -1,0 +1,16 @@
+lints.workspace = true
+
+[package]
+name = "pyrr-libm"
+edition = "2021"
+
+version.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+libm.workspace = true
+paste.workspace = true
+wit-bindgen.workspace = true
+
+[lib]
+crate-type = ["staticlib", "cdylib"]
