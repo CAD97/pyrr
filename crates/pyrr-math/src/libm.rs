@@ -3,22 +3,23 @@ macro_rules! forward_libm {
         $(fn $fn:ident($($arg:ident: $Arg:ty),*) -> $Ret:ty;)*
     } => {
         $(fn $fn($($arg: $Arg),*) -> $Ret {
-            libm::$fn($($arg),*)
+            $fn($($arg),*)
         })*
     };
 }
 
-// wasm builtin: ceil, ceilf, fabs, fabsf, floor, floorf, sqrt, sqrtf, trunc, truncf
-// also benefit: rem_pio2_large, round, roundf
+// wasm builtin: ceil[f], fabs[f], floor[f], sqrt[f], trunc[f]
+// also benefit: rem_pio2_large, round[f]
+// MAYBE: patch libm to use less precise hypot[f]?
 
 pub use libm::*;
 
-// MAYBE: patch libm crate to use some of these less precise impls?
 impl crate::ffi::libm::Guest for crate::ffi::Exports {
     forward_libm! {
         fn acosf(x: f32) -> f32;
         fn acoshf(x: f32) -> f32;
         fn asinf(x: f32) -> f32;
+        fn asinhf(x: f32) -> f32;
         fn atanf(x: f32) -> f32;
         fn atan2f(y: f32, x: f32) -> f32;
         fn atanhf(x: f32) -> f32;
@@ -76,6 +77,7 @@ impl crate::ffi::libm::Guest for crate::ffi::Exports {
         fn acos(x: f64) -> f64;
         fn acosh(x: f64) -> f64;
         fn asin(x: f64) -> f64;
+        fn asinh(x: f64) -> f64;
         fn atan(x: f64) -> f64;
         fn atan2(y: f64, x: f64) -> f64;
         fn atanh(x: f64) -> f64;

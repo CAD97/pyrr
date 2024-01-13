@@ -3,117 +3,310 @@ package pyrr:math;
 interface libm {
     // basic operations
 
-    acosf: func(x: float32) -> float32;
-    acoshf: func(x: float32) -> float32;
-    asinf: func(x: float32) -> float32;
-    atanf: func(x: float32) -> float32;
-    atan2f: func(y: float32, x: float32) -> float32;
-    atanhf: func(x: float32) -> float32;
-    cbrtf: func(x: float32) -> float32;
-    ceilf: func(x: float32) -> float32;
-    copysignf: func(x: float32, y: float32) -> float32;
-    cosf: func(x: float32) -> float32;
-    coshf: func(x: float32) -> float32;
-    erff: func(x: float32) -> float32; // rare
-    erfcf: func(x: float32) -> float32; // rare
-    expf: func(x: float32) -> float32;
-    exp2f: func(x: float32) -> float32;
-    exp10f: func(x: float32) -> float32; // rare
-    expm1f: func(x: float32) -> float32;
-    fabsf: func(x: float32) -> float32;
-    fdimf: func(x: float32, y: float32) -> float32; // rare
-    floorf: func(x: float32) -> float32;
-    fmaf: func(x: float32, y: float32, z: float32) -> float32;
-    fmaxf: func(x: float32, y: float32) -> float32; // rare
-    fminf: func(x: float32, y: float32) -> float32; // rare
-    fmodf: func(x: float32, y: float32) -> float32; // rare
-    frexpf: func(x: float32) -> tuple<float32, s32>; // rare
-    hypotf: func(x: float32, y: float32) -> float32;
-    ilogbf: func(x: float32) -> s32; // rare
-    j0f: func(x: float32) -> float32; // rare
-    j1f: func(x: float32) -> float32; // rare
-    jnf: func(n: s32, x: float32) -> float32; // rare
-    ldexpf: func(x: float32, n: s32) -> float32; // rare
-    lgammaf: func(x: float32) -> float32; // rare
-    lgammaf-r: func(x: float32) -> tuple<float32, s32>; // rare
-    logf: func(x: float32) -> float32;
-    log1pf: func(x: float32) -> float32;
-    log2f: func(x: float32) -> float32;
-    log10f: func(x: float32) -> float32;
-    modff: func(x: float32) -> tuple<float32, float32>; // rare
-    nextafterf: func(x: float32, y: float32) -> float32; // rare
-    powf: func(x: float32, y: float32) -> float32;
-    remainderf: func(x: float32, y: float32) -> float32; // rare
-    remquof: func(x: float32, y: float32) -> tuple<float32, s32>; // rare
-    rintf: func(x: float32) -> float32; // rare
-    roundf: func(x: float32) -> float32;
-    scalbnf: func(x: float32, n: s32) -> float32;
-    sinf: func(x: float32) -> float32;
-    sincosf: func(x: float32) -> tuple<float32, float32>;
-    sinhf: func(x: float32) -> float32;
-    sqrtf: func(x: float32) -> float32;
-    tanf: func(x: float32) -> float32;
-    tanhf: func(x: float32) -> float32;
-    tgammaf: func(x: float32) -> float32; // rare
-    truncf: func(x: float32) -> float32;
-    y0f: func(x: float32) -> float32; // rare
-    y1f: func(x: float32) -> float32; // rare
-    ynf: func(n: s32, x: float32) -> float32; // rare
-
-    acos: func(x: float64) -> float64;
-    acosh: func(x: float64) -> float64;
-    asin: func(x: float64) -> float64;
-    atan: func(x: float64) -> float64;
-    atan2: func(y: float64, x: float64) -> float64;
-    atanh: func(x: float64) -> float64;
-    cbrt: func(x: float64) -> float64;
-    ceil: func(x: float64) -> float64;
-    copysign: func(x: float64, y: float64) -> float64;
-    cos: func(x: float64) -> float64;
-    cosh: func(x: float64) -> float64;
-    erf: func(x: float64) -> float64; // rare
-    erfc: func(x: float64) -> float64; // rare
-    exp: func(x: float64) -> float64;
-    exp2: func(x: float64) -> float64;
-    exp10: func(x: float64) -> float64; // rare
-    expm1: func(x: float64) -> float64;
+    /// Computes the absolute value of a floating-point value ($|x|$).
     fabs: func(x: float64) -> float64;
-    fdim: func(x: float64, y: float64) -> float64; // rare
-    floor: func(x: float64) -> float64;
-    fma: func(x: float64, y: float64, z: float64) -> float64;
-    fmax: func(x: float64, y: float64) -> float64; // rare
-    fmin: func(x: float64, y: float64) -> float64; // rare
+    /// Computes the absolute value of a floating-point value ($|x|$).
+    fabsf: func(x: float32) -> float32;
+    
+    /// Computes the remainder of the floating-point division operation.
     fmod: func(x: float64, y: float64) -> float64; // rare
-    frexp: func(x: float64) -> tuple<float64, s32>; // rare
-    hypot: func(x: float64, y: float64) -> float64;
-    ilogb: func(x: float64) -> s32; // rare
-    j0: func(x: float64) -> float64; // rare
-    j1: func(x: float64) -> float64; // rare
-    jn: func(n: s32, x: float64) -> float64; // rare
-    ldexp: func(x: float64, n: s32) -> float64; // rare
-    lgamma: func(x: float64) -> float64; // rare
-    lgamma-r: func(x: float64) -> tuple<float64, s32>; // rare
-    log: func(x: float64) -> float64;
-    log1p: func(x: float64) -> float64;
-    log2: func(x: float64) -> float64;
-    log10: func(x: float64) -> float64;
-    modf: func(x: float64) -> tuple<float64, float64>; // rare
-    nextafter: func(x: float64, y: float64) -> float64; // rare
-    pow: func(x: float64, y: float64) -> float64;
+    /// Computes the remainder of the floating-point division operation.
+    fmodf: func(x: float32, y: float32) -> float32; // rare
+
+    /// Computes the signed remainder of the floating-point division operation.
     remainder: func(x: float64, y: float64) -> float64; // rare
+    /// Computes the signed remainder of the floating-point division operation.
+    remainderf: func(x: float32, y: float32) -> float32; // rare
+
+    /// Computes the signed remainder as well as the last three bits of the division operation.
     remquo: func(x: float64, y: float64) -> tuple<float64, s32>; // rare
-    rint: func(x: float64) -> float64; // rare
-    round: func(x: float64) -> float64;
-    scalbn: func(x: float64, n: s32) -> float64;
-    sin: func(x: float64) -> float64;
-    sincos: func(x: float64) -> tuple<float64, float64>;
-    sinh: func(x: float64) -> float64;
+    /// Computes the signed remainder as well as the last three bits of the division operation.
+    remquof: func(x: float32, y: float32) -> tuple<float32, s32>; // rare
+
+    /// Computes the fused multiply-add operation ($x \times y + z$).
+    fma: func(x: float64, y: float64, z: float64) -> float64;
+    /// Computes the fused multiply-add operation ($x \times y + z$).
+    fmaf: func(x: float32, y: float32, z: float32) -> float32;
+
+    /// Determines the larger of two floating-point values.
+    fmax: func(x: float64, y: float64) -> float64; // rare
+    /// Determines the larger of two floating-point values.
+    fmaxf: func(x: float32, y: float32) -> float32; // rare
+
+    /// Determines the smaller of two floating-point values.
+    fmin: func(x: float64, y: float64) -> float64; // rare
+    /// Determines the smaller of two floating-point values.
+    fminf: func(x: float32, y: float32) -> float32; // rare
+
+    /// Determines positive difference of two floating-point values ($\max(0,x-y)$).
+    fdim: func(x: float64, y: float64) -> float64; // rare
+    /// Determines positive difference of two floating-point values ($\max(0,x-y)$).
+    fdimf: func(x: float32, y: float32) -> float32; // rare
+
+    // /// Returns a NaN (not-a-number).
+    // nan: func() -> float32; // rare
+    // /// Returns a NaN (not-a-number).
+    // nanf: func() -> float32; // rare
+
+    // exponential functions
+
+    /// Computes $e$ raised to the given power ($e^x$).
+    exp: func(x: float64) -> float64;
+    /// Computes $e$ raised to the given power ($e^x$).
+    expf: func(x: float32) -> float32;
+
+    /// Computes 10 raised to the given power ($10^x$).
+    exp10: func(x: float64) -> float64; // ext, rare
+    /// Computes 10 raised to the given power ($10^x$).
+    exp10f: func(x: float32) -> float32; // ext, rare
+
+    /// Computes 2 raised to the given power ($2^x$).
+    exp2: func(x: float64) -> float64;
+    /// Computes 2 raised to the given power ($2^x$).
+    exp2f: func(x: float32) -> float32;
+
+    /// Computes $e$ raised to the given power, minus one ($e^x-1$).
+    expm1: func(x: float64) -> float64;
+    /// Computes $e$ raised to the given power, minus one ($e^x-1$).
+    expm1f: func(x: float32) -> float32;
+
+    /// Computes natural (base-$e$) logarithm ($\ln x$).
+    log: func(x: float64) -> float64;
+    /// Computes natural (base-$e$) logarithm ($\ln x$).
+    logf: func(x: float32) -> float32;
+
+    /// Computes common (base-10) logarithm ($\log_10 x$).
+    log10: func(x: float64) -> float64;
+    /// Computes common (base-10) logarithm ($\log_10 x$).
+    log10f: func(x: float32) -> float32;
+
+    /// Computes base-2 logarithm ($\log_2 x$).
+    log2: func(x: float64) -> float64;
+    /// Computes base-2 logarithm ($\log_2 x$).
+    log2f: func(x: float32) -> float32;
+
+    /// Computes natural (base-$e$) logarithm of 1 plus the given number ($\ln (1+x)$).
+    log1p: func(x: float64) -> float64;
+    /// Computes natural (base-$e$) logarithm of 1 plus the given number ($\ln (1+x)$).
+    log1pf: func(x: float32) -> float32;
+
+    // power functions
+
+    /// Computes a number raised to the given power ($x^y$).
+    pow: func(x: float64, y: float64) -> float64;
+    /// Computes a number raised to the given power ($x^y$).
+    powf: func(x: float32, y: float32) -> float32;
+
+    /// Computes square root ($\sqrt x$).
     sqrt: func(x: float64) -> float64;
+    /// Computes square root ($\sqrt x$).
+    sqrtf: func(x: float32) -> float32;
+
+    /// Computes cube root ($\cbrt x$).
+    cbrt: func(x: float64) -> float64;
+    /// Computes cube root ($\cbrt x$).
+    cbrtf: func(x: float32) -> float32;
+
+    /// Computes square root of the sum of the squares of two given numbers ($\sqrt{x^2 + y^2}$).
+    hypot: func(x: float64, y: float64) -> float64;
+    /// Computes square root of the sum of the squares of two given numbers ($\sqrt{x^2 + y^2}$).
+    hypotf: func(x: float32, y: float32) -> float32;
+
+    // trigonometric functions
+
+    /// Computes sine ($\sin x$).
+    sin: func(x: float64) -> float64;
+    /// Computes sine ($\sin x$).
+    sinf: func(x: float32) -> float32;
+
+    /// Computes cosine ($\cos x$).
+    cos: func(x: float64) -> float64;
+    /// Computes cosine ($\cos x$).
+    cosf: func(x: float32) -> float32;
+
+    /// Computes sine and cosine.
+    sincos: func(x: float64) -> tuple<float64, float64>; // ext
+    /// Computes sine and cosine.
+    sincosf: func(x: float32) -> tuple<float32, float32>; // ext
+
+    /// Computes tangent ($\tan x$).
     tan: func(x: float64) -> float64;
+    /// Computes tangent ($\tan x$).
+    tanf: func(x: float32) -> float32;
+
+    /// Computes arc sine ($\arcsin x$).
+    asin: func(x: float64) -> float64;
+    /// Computes arc sine ($\arcsin x$).
+    asinf: func(x: float32) -> float32;
+
+    /// Computes arc cosine ($\arccos x$).
+    acos: func(x: float64) -> float64;
+    /// Computes arc cosine ($\arccos x$).
+    acosf: func(x: float32) -> float32;
+
+    /// Computes arc tangent ($\arctan x$).
+    atan: func(x: float64) -> float64;
+    /// Computes arc tangent ($\arctan x$).
+    atanf: func(x: float32) -> float32;
+
+    /// Computes arc tangent, using signs to determine quadrants.
+    atan2: func(y: float64, x: float64) -> float64;
+    /// Computes arc tangent, using signs to determine quadrants.
+    atan2f: func(y: float32, x: float32) -> float32;
+
+    // hyperbolic functions
+
+    /// Computes hyperbolic sine ($\sinh x$).
+    sinh: func(x: float64) -> float64;
+    /// Computes hyperbolic sine ($\sinh x$).
+    sinhf: func(x: float32) -> float32;
+
+    /// Computes hyperbolic cosine ($\cosh x$).
+    cosh: func(x: float64) -> float64;
+    /// Computes hyperbolic cosine ($\cosh x$).
+    coshf: func(x: float32) -> float32;
+
+    /// Computes hyperbolic tangent ($\tanh x$).
     tanh: func(x: float64) -> float64;
+    /// Computes hyperbolic tangent ($\tanh x$).
+    tanhf: func(x: float32) -> float32;
+
+    // /// Computes inverse hyperbolic sine ($\arsinh x$).
+    asinh: func(x: float64) -> float64;
+    // /// Computes inverse hyperbolic sine ($\arsinh x$).
+    asinhf: func(x: float32) -> float32;
+
+    /// Computes inverse hyperbolic cosine ($\arcosh x$).
+    acosh: func(x: float64) -> float64;
+    /// Computes inverse hyperbolic cosine ($\arcosh x$).
+    acoshf: func(x: float32) -> float32;
+
+    /// Computes inverse hyperbolic tangent ($\artanh x$).
+    atanh: func(x: float64) -> float64;
+    /// Computes inverse hyperbolic tangent ($\artanh x$).
+    atanhf: func(x: float32) -> float32;
+
+    // error and gamma functions
+
+    /// Computes error function.
+    erf: func(x: float64) -> float64; // rare
+    /// Computes error function.
+    erff: func(x: float32) -> float32; // rare
+
+    /// Computes complementary error function.
+    erfc: func(x: float64) -> float64; // rare
+    /// Computes complementary error function.
+    erfcf: func(x: float32) -> float32; // rare
+
+    /// Computes gamma function.
     tgamma: func(x: float64) -> float64; // rare
+    /// Computes gamma function.
+    tgammaf: func(x: float32) -> float32; // rare
+
+    /// Computes natural (base-$e$) logarithm of the gamma function.
+    lgamma: func(x: float64) -> float64; // rare
+    /// Computes natural (base-$e$) logarithm of the gamma function.
+    lgammaf: func(x: float32) -> float32; // rare
+
+    // nearest integer floating-point operations
+
+    /// Computes smallest integer not less than the given value.
+    ceil: func(x: float64) -> float64;
+    /// Computes smallest integer not less than the given value.
+    ceilf: func(x: float32) -> float32;
+
+    /// Computes largest integer not greater than the given value.
+    floor: func(x: float64) -> float64;
+    /// Computes largest integer not greater than the given value.
+    floorf: func(x: float32) -> float32;
+
+    /// Rounds to nearest integer not greater in magnitude than the given value.
     trunc: func(x: float64) -> float64;
-    y0: func(x: float64) -> float64; // rare
-    y1: func(x: float64) -> float64; // rare
-    yn: func(n: s32, x: float64) -> float64; // rare
+    /// Rounds to nearest integer not greater in magnitude than the given value.
+    truncf: func(x: float32) -> float32;
+
+    /// Rounds to the nearest integer, rounding away from zero in halfway cases.
+    round: func(x: float64) -> float64;
+    /// Rounds to the nearest integer, rounding away from zero in halfway cases.
+    roundf: func(x: float32) -> float32;
+
+    // /// Rounds to an integer using the current rounding mode.
+    // nearbyint: func(x: float64) -> float64; // rare
+    // /// Rounds to an integer using the current rounding mode.
+    // nearbyintf: func(x: float32) -> float32; // rare
+
+    /// Rounds to an integer using the current rounding mode.
+    rint: func(x: float64) -> float64; // rare
+    /// Rounds to an integer using the current rounding mode.
+    rintf: func(x: float32) -> float32; // rare
+
+    // floating-point manipulation functions
+
+    /// Breaks a number into significand and a power of 2.
+    frexp: func(x: float64) -> tuple<float64, s32>; // rare
+    /// Breaks a number into significand and a power of 2.
+    frexpf: func(x: float32) -> tuple<float32, s32>; // rare
+
+    /// Multiplies a number by 2 raised to a power.
+    ldexp: func(x: float64, n: s32) -> float64; // rare
+    /// Multiplies a number by 2 raised to a power.
+    ldexpf: func(x: float32, n: s32) -> float32; // rare
+
+    /// Breaks a number into integer and fractional parts.
+    modf: func(x: float64) -> tuple<float64, float64>; // rare
+    /// Breaks a number into integer and fractional parts.
+    modff: func(x: float32) -> tuple<float32, float32>; // rare
+
+    /// Computes efficiently a number times FLT_RADIX raised to a power.
+    scalbn: func(x: float64, n: s32) -> float64;
+    /// Computes efficiently a number times FLT_RADIX raised to a power.
+    scalbnf: func(x: float32, n: s32) -> float32;
+
+    /// Extracts exponent of the given number.
+    ilogb: func(x: float64) -> s32; // rare
+    /// Extracts exponent of the given number.
+    ilogbf: func(x: float32) -> s32; // rare
+
+    /// Determines next representable floating-point value towards the given value.
+    nextafter: func(x: float64, y: float64) -> float64; // rare
+    /// Determines next representable floating-point value towards the given value.
+    nextafterf: func(x: float32, y: float32) -> float32; // rare
+
+    /// Produces a value with the magnitude of a given value and the sign of another given value.
+    copysign: func(x: float64, y: float64) -> float64;
+    /// Produces a value with the magnitude of a given value and the sign of another given value.
+    copysignf: func(x: float32, y: float32) -> float32;
+
+    // classification and comparison
+
+    // fpclassify
+    // isfinite
+    // isinf
+    // isnan
+    // isnormal
+    // signbit
+    // isgreater
+    // isgreaterequal
+    // isless
+    // islessequal
+    // islessgreater
+    // isunordered
+
+    // unsorted
+
+    j0f: func(x: float32) -> float32; // ext, rare
+    j1f: func(x: float32) -> float32; // ext, rare
+    jnf: func(n: s32, x: float32) -> float32; // ext, rare
+    lgammaf-r: func(x: float32) -> tuple<float32, s32>; // ext, rare
+    y0f: func(x: float32) -> float32; // ext, rare
+    y1f: func(x: float32) -> float32; // ext, rare
+    ynf: func(n: s32, x: float32) -> float32; // ext, rare
+
+    j0: func(x: float64) -> float64; // ext, rare
+    j1: func(x: float64) -> float64; // ext, rare
+    jn: func(n: s32, x: float64) -> float64; // ext, rare
+    lgamma-r: func(x: float64) -> tuple<float64, s32>; // ext, rare
+    y0: func(x: float64) -> float64; // ext, rare
+    y1: func(x: float64) -> float64; // ext, rare
+    yn: func(n: s32, x: float64) -> float64; // ext, rare
 }
