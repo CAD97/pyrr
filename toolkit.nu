@@ -95,7 +95,7 @@ export def `build wasm` [
         let comp_wasm = [(workspace target) "wasm-component" "pyrr-math.wasm"] | path join
 
         ? toolkit build wasm --math
-        > cargo build --manifest-path (workspace member pyrr-math).manifest_path --target wasm32-unknown-unknown --profile wasm-component
+        > cargo +nightly build --manifest-path (workspace member pyrr-math).manifest_path --target wasm32-unknown-unknown --profile wasm-component --features libm/unstable
         > wasm-opt $core_wasm -o $temp_wasm --ignore-implicit-traps -O3
         > wasm-tools component new $temp_wasm -o $comp_wasm
 

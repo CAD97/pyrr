@@ -14,4 +14,4 @@ na.workspace = true
 wit-bindgen.workspace = true
 
 [lib]
-# crate-type = ["staticlib", "cdylib"]
+crate-type = ["staticlib", "cdylib"]
