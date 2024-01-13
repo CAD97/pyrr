@@ -1,0 +1,6 @@
+package pyrr:math;
+
+world exports {
+    export libm;
+    export vec2f;
+}

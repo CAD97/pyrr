@@ -1,5 +1,5 @@
 avoid-breaking-exported-api = false
-doc-valid-indents = [".."]
+doc-valid-idents = [".."]
 trivial-copy-size-limit = 256
 pass-by-value-size-limit = 256
 allow-expect-in-tests = true

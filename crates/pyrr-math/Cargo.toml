@@ -1,16 +1,17 @@
 lints.workspace = true
 
 [package]
-name = "pyrr-libm"
+name = "pyrr-math"
 edition = "2021"
 
 version.workspace = true
 rust-version.workspace = true
 
 [dependencies]
+glm.workspace = true
 libm.workspace = true
-paste.workspace = true
+na.workspace = true
 wit-bindgen.workspace = true
 
 [lib]
-crate-type = ["staticlib", "cdylib"]
+# crate-type = ["staticlib", "cdylib"]

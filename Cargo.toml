@@ -10,7 +10,7 @@ rust-version = "1.75.0"
 
 [workspace.dependencies]
 pyrr-core = { path = "pyrr/core" }
-pyrr-libm = { path = "pyrr/libm" }
+pyrr-math = { path = "pyrr/math" }
 pyrr-stdx = { path = "pyrr/stdx" }
 
 
@@ -29,6 +29,12 @@ version = "0.14.0"
 default-features = false
 features = ["std", "nalgebra"]
 
+[workspace.dependencies.glm]
+package = "nalgebra-glm"
+version = "0.18.0"
+default-features = false
+features = ["std"]
+
 [workspace.dependencies.hashbrown]
 version = "0.14.3"
 default-features = false
@@ -44,13 +50,16 @@ version = "0.2.8"
 default-features = false
 features = []
 
-[workspace.dependencies.nalgebra]
-nalgebra = { version = "0.32.3", default-features = false, features = [
-    "std",
-    "macros",
-    "convert-mint",
-    "convert-bytemuck",
-] }
+[workspace.dependencies.mint]
+version = "0.5.9"
+default-features = false
+features = []
+
+[workspace.dependencies.na]
+package = "nalgebra"
+version = "0.32.3"
+default-features = false
+features = ["std"]
 
 [workspace.dependencies.paste]
 version = "1.0.14"
@@ -93,6 +102,11 @@ default-features = false
 features = []
 
 
+[patch.crates-io]
+nalgebra = { git = "https://github.com/CAD97/nalgebra", branch = "patch-3" }     # dimforge/nalgebra#1349
+nalgebra-glm = { git = "https://github.com/CAD97/nalgebra", branch = "patch-3" } # dimforge/nalgebra#1349
+
+
 [profile.dev]
 opt-level = 1
 
@@ -105,7 +119,7 @@ lto = "fat"
 
 [profile.wasm-component]
 inherits = "release"
-strip = "symbols"
+strip = "debuginfo"
 panic = "abort"
 
 
@@ -181,7 +195,6 @@ empty_drop = "warn"
 exit = "warn"
 expect_used = "warn"
 lossy_float_literal = "warn"
-min_ident_chars = "warn"
 missing_assert_message = "warn"
 print_stdout = "warn"
 print_stderr = "warn"
@@ -194,3 +207,5 @@ unnecessary_safety_comment = "warn"
 unnecessary_safety_doc = "warn"
 unneeded_field_pattern = "warn"
 unseparated_literal_suffix = "warn"
+# clippy::style
+assertions_on_constants = "allow" # rust-lang/rust-clippy#8159

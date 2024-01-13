@@ -1,0 +1,119 @@
+package pyrr:math;
+
+interface libm {
+    // basic operations
+
+    acosf: func(x: float32) -> float32;
+    acoshf: func(x: float32) -> float32;
+    asinf: func(x: float32) -> float32;
+    atanf: func(x: float32) -> float32;
+    atan2f: func(y: float32, x: float32) -> float32;
+    atanhf: func(x: float32) -> float32;
+    cbrtf: func(x: float32) -> float32;
+    ceilf: func(x: float32) -> float32;
+    copysignf: func(x: float32, y: float32) -> float32;
+    cosf: func(x: float32) -> float32;
+    coshf: func(x: float32) -> float32;
+    erff: func(x: float32) -> float32; // rare
+    erfcf: func(x: float32) -> float32; // rare
+    expf: func(x: float32) -> float32;
+    exp2f: func(x: float32) -> float32;
+    exp10f: func(x: float32) -> float32; // rare
+    expm1f: func(x: float32) -> float32;
+    fabsf: func(x: float32) -> float32;
+    fdimf: func(x: float32, y: float32) -> float32; // rare
+    floorf: func(x: float32) -> float32;
+    fmaf: func(x: float32, y: float32, z: float32) -> float32;
+    fmaxf: func(x: float32, y: float32) -> float32; // rare
+    fminf: func(x: float32, y: float32) -> float32; // rare
+    fmodf: func(x: float32, y: float32) -> float32; // rare
+    frexpf: func(x: float32) -> tuple<float32, s32>; // rare
+    hypotf: func(x: float32, y: float32) -> float32;
+    ilogbf: func(x: float32) -> s32; // rare
+    j0f: func(x: float32) -> float32; // rare
+    j1f: func(x: float32) -> float32; // rare
+    jnf: func(n: s32, x: float32) -> float32; // rare
+    ldexpf: func(x: float32, n: s32) -> float32; // rare
+    lgammaf: func(x: float32) -> float32; // rare
+    lgammaf-r: func(x: float32) -> tuple<float32, s32>; // rare
+    logf: func(x: float32) -> float32;
+    log1pf: func(x: float32) -> float32;
+    log2f: func(x: float32) -> float32;
+    log10f: func(x: float32) -> float32;
+    modff: func(x: float32) -> tuple<float32, float32>; // rare
+    nextafterf: func(x: float32, y: float32) -> float32; // rare
+    powf: func(x: float32, y: float32) -> float32;
+    remainderf: func(x: float32, y: float32) -> float32; // rare
+    remquof: func(x: float32, y: float32) -> tuple<float32, s32>; // rare
+    rintf: func(x: float32) -> float32; // rare
+    roundf: func(x: float32) -> float32;
+    scalbnf: func(x: float32, n: s32) -> float32;
+    sinf: func(x: float32) -> float32;
+    sincosf: func(x: float32) -> tuple<float32, float32>;
+    sinhf: func(x: float32) -> float32;
+    sqrtf: func(x: float32) -> float32;
+    tanf: func(x: float32) -> float32;
+    tanhf: func(x: float32) -> float32;
+    tgammaf: func(x: float32) -> float32; // rare
+    truncf: func(x: float32) -> float32;
+    y0f: func(x: float32) -> float32; // rare
+    y1f: func(x: float32) -> float32; // rare
+    ynf: func(n: s32, x: float32) -> float32; // rare
+
+    acos: func(x: float64) -> float64;
+    acosh: func(x: float64) -> float64;
+    asin: func(x: float64) -> float64;
+    atan: func(x: float64) -> float64;
+    atan2: func(y: float64, x: float64) -> float64;
+    atanh: func(x: float64) -> float64;
+    cbrt: func(x: float64) -> float64;
+    ceil: func(x: float64) -> float64;
+    copysign: func(x: float64, y: float64) -> float64;
+    cos: func(x: float64) -> float64;
+    cosh: func(x: float64) -> float64;
+    erf: func(x: float64) -> float64; // rare
+    erfc: func(x: float64) -> float64; // rare
+    exp: func(x: float64) -> float64;
+    exp2: func(x: float64) -> float64;
+    exp10: func(x: float64) -> float64; // rare
+    expm1: func(x: float64) -> float64;
+    fabs: func(x: float64) -> float64;
+    fdim: func(x: float64, y: float64) -> float64; // rare
+    floor: func(x: float64) -> float64;
+    fma: func(x: float64, y: float64, z: float64) -> float64;
+    fmax: func(x: float64, y: float64) -> float64; // rare
+    fmin: func(x: float64, y: float64) -> float64; // rare
+    fmod: func(x: float64, y: float64) -> float64; // rare
+    frexp: func(x: float64) -> tuple<float64, s32>; // rare
+    hypot: func(x: float64, y: float64) -> float64;
+    ilogb: func(x: float64) -> s32; // rare
+    j0: func(x: float64) -> float64; // rare
+    j1: func(x: float64) -> float64; // rare
+    jn: func(n: s32, x: float64) -> float64; // rare
+    ldexp: func(x: float64, n: s32) -> float64; // rare
+    lgamma: func(x: float64) -> float64; // rare
+    lgamma-r: func(x: float64) -> tuple<float64, s32>; // rare
+    log: func(x: float64) -> float64;
+    log1p: func(x: float64) -> float64;
+    log2: func(x: float64) -> float64;
+    log10: func(x: float64) -> float64;
+    modf: func(x: float64) -> tuple<float64, float64>; // rare
+    nextafter: func(x: float64, y: float64) -> float64; // rare
+    pow: func(x: float64, y: float64) -> float64;
+    remainder: func(x: float64, y: float64) -> float64; // rare
+    remquo: func(x: float64, y: float64) -> tuple<float64, s32>; // rare
+    rint: func(x: float64) -> float64; // rare
+    round: func(x: float64) -> float64;
+    scalbn: func(x: float64, n: s32) -> float64;
+    sin: func(x: float64) -> float64;
+    sincos: func(x: float64) -> tuple<float64, float64>;
+    sinh: func(x: float64) -> float64;
+    sqrt: func(x: float64) -> float64;
+    tan: func(x: float64) -> float64;
+    tanh: func(x: float64) -> float64;
+    tgamma: func(x: float64) -> float64; // rare
+    trunc: func(x: float64) -> float64;
+    y0: func(x: float64) -> float64; // rare
+    y1: func(x: float64) -> float64; // rare
+    yn: func(n: s32, x: float64) -> float64; // rare
+}

@@ -1,0 +1,49 @@
+package pyrr:math;
+
+interface vec2f {
+    use types.{vec2f};
+
+    constructor-vec2f: func(x: float32, y: float32) -> vec2f;
+    static-vec2f-splat: func(v: float32) -> vec2f;
+
+    method-vec2f-abs: func(self: vec2f) -> vec2f;
+    method-vec2f-neg: func(self: vec2f) -> vec2f;
+    method-vec2f-ceil: func(self: vec2f) -> vec2f;
+    method-vec2f-floor: func(self: vec2f) -> vec2f;
+    method-vec2f-trunc: func(self: vec2f) -> vec2f;
+    method-vec2f-fract: func(self: vec2f) -> vec2f;
+    method-vec2f-round: func(self: vec2f) -> vec2f;
+    method-vec2f-signum: func(self: vec2f) -> vec2f;
+
+    method-vec2f-add: func(self: vec2f, rhs: vec2f) -> vec2f;
+    method-vec2f-sub: func(self: vec2f, rhs: vec2f) -> vec2f;
+    method-vec2f-min: func(self: vec2f, rhs: vec2f) -> vec2f;
+    method-vec2f-max: func(self: vec2f, rhs: vec2f) -> vec2f;
+    method-vec2f-copysign: func(self: vec2f, sign: vec2f) -> vec2f;
+
+    method-vec2f-eq: func(self: vec2f, rhs: vec2f) -> bool;
+    method-vec2f-ne: func(self: vec2f, rhs: vec2f) -> bool;
+
+    method-vec2f-clamp: func(self: vec2f, min: vec2f, max: vec2f) -> vec2f;
+
+    method-vec2f-powf: func(self: vec2f, pow: float32) -> vec2f;
+    method-vec2f-powi: func(self: vec2f, pow: s32) -> vec2f;
+
+    method-vec2f-recip: func(self: vec2f) -> vec2f;
+    method-vec2f-len: func(self: vec2f) -> float32;
+    method-vec2f-len-recip: func(self: vec2f) -> float32;
+    method-vec2f-len-sq: func(self: vec2f) -> float32;
+    method-vec2f-len-sq-recip: func(self: vec2f) -> float32;
+
+    method-vec2f-normalize: func(self: vec2f) -> vec2f;
+    method-vec2f-normalize-or-zero: func(self: vec2f) -> vec2f;
+    method-vec2f-normalize-or-wild: func(self: vec2f) -> vec2f;
+    method-vec2f-is-normalized: func(self: vec2f) -> bool;
+    method-vec2f-is-normalized-enough: func(self: vec2f, epsilon: float32) -> bool;
+
+    method-vec2f-project-onto: func(self: vec2f, onto: vec2f) -> vec2f;
+    method-vec2f-reject-from: func(self: vec2f, onto: vec2f) -> vec2f;
+
+    method-vec2f-is-nan: func(self: vec2f) -> bool;
+    method-vec2f-is-finite: func(self: vec2f) -> bool;
+}
