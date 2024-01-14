@@ -6,12 +6,14 @@ mod wit {
             "pyrr:math/libm": Exports,
             "pyrr:math/vec2f": Exports,
         },
+        with: {
+            "pyrr:math/types": super::types,
+        }
     });
 }
 
 pub mod ffi {
     pub use crate::wit::exports::pyrr::math::*;
-    pub use crate::wit::pyrr::math::*;
     pub use crate::wit::Exports;
 }
 
@@ -22,6 +24,7 @@ macro_rules! cold_panic {
 }
 
 mod libm;
+mod types;
 mod vec;
 
-pub use self::{libm::*, vec::*};
+pub use self::{libm::*, types::*, vec::*};

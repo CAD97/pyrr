@@ -3,7 +3,7 @@ macro_rules! forward_libm {
         $(fn $fn:ident($($arg:ident: $Arg:ty),*) -> $Ret:ty;)*
     } => {
         $(fn $fn($($arg: $Arg),*) -> $Ret {
-            $fn($($arg),*)
+            libm::$fn($($arg),*)
         })*
     };
 }
@@ -12,7 +12,7 @@ macro_rules! forward_libm {
 // also benefit: rem_pio2_large, round[f]
 // MAYBE: patch libm to use less precise hypot[f]?
 
-pub use libm::*;
+pub use libm::Libm;
 
 impl crate::ffi::libm::Guest for crate::ffi::Exports {
     forward_libm! {
