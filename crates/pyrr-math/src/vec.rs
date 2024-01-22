@@ -59,25 +59,21 @@ decl_vector! {
 }
 
 macro_rules! impl_vector {{
-    $(mod $guest:ident;)?
-    $(const $N:ident: usize = N;)?
+    $(trait $Guest:ident = Guest;)?
+    $(const $N:ident: usize;)?
     type $Vector:ident;
     $($items:item)*
 } => {
     const _: () = {
-        const N: usize = 2;
+        $(const $N: usize = 2;)?
+        $(use crate::ffi::vec2f::Guest as $Guest;)?
         type $Vector<T> = Vector2<T>;
-        $(mod $guest {
-            pub(super) use crate::ffi::vec2f::Guest as f32;
-        })?
         $($items)*
     };
     const _: () = {
-        const N: usize = 3;
+        $(const $N: usize = 3;)?
+        $(use crate::ffi::vec3f::Guest as $Guest;)?
         type $Vector<T> = Vector3<T>;
-        $(mod $guest {
-            pub(super) use crate::ffi::vec3f::Guest as f32;
-        })?
         $($items)*
     };
 }}
@@ -94,6 +90,7 @@ const unsafe fn transmute_prefix<Src, Dst>(src: Src) -> Dst {
 }
 
 impl_vector!(
+    const N: usize;
     type Vector;
 
     impl<T> Vector<T> {
@@ -284,6 +281,7 @@ impl<T> From<Vector3<T>> for mint::Vector3<T> {
 }
 
 impl_vector!(
+    const N: usize;
     type Vector;
 
     impl<T: Scalar> Vector<T> {
@@ -327,8 +325,10 @@ impl_vector!(
 );
 
 impl_vector!(
+    const N: usize;
     type Vector;
 
+    // rust-lang/rustfmt#6036
     impl Vector<f32> {
         pub fn ceil(self) -> Self {
             glm::ceil(&glm::TVec::<f32, N>::from(self)).into()
@@ -421,7 +421,7 @@ impl_vector!(
 
         pub fn project_onto(self, onto: Self) -> Self {
             let onto = glm::TVec::<f32, N>::from(onto);
-            onto.mul(glm::TVec::<f32, N>::from(self).dot(&onto)).into()
+            glm::TVec::<f32, N>::from(self).dot(&onto).mul(onto).into()
         }
 
         pub fn reject_from(self, onto: Self) -> Self {
@@ -441,10 +441,11 @@ impl_vector!(
 );
 
 impl_vector!(
-    mod guest;
+    trait Guest = Guest;
     type Vector;
 
-    impl guest::f32 for Vector<f32> {
+    // rust-lang/rustfmt#6036
+    impl Guest for Vector<f32> {
         fn static_splat(v: f32) -> Self {
             Self::splat(v)
         }
