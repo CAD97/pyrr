@@ -59,20 +59,20 @@ decl_vector! {
 }
 
 macro_rules! impl_vector {{
-    $(trait $Guest:ident = Guest;)?
+    $(use Guest $(as $Guest:ident)?;)?
     $(const $N:ident: usize;)?
     type $Vector:ident;
     $($items:item)*
 } => {
     const _: () = {
         $(const $N: usize = 2;)?
-        $(use crate::ffi::vec2f::Guest as $Guest;)?
+        $(use crate::ffi::vec2f::Guest $(as $Guest)?;)?
         type $Vector<T> = Vector2<T>;
         $($items)*
     };
     const _: () = {
         $(const $N: usize = 3;)?
-        $(use crate::ffi::vec3f::Guest as $Guest;)?
+        $(use crate::ffi::vec3f::Guest $(as $Guest)?;)?
         type $Vector<T> = Vector3<T>;
         $($items)*
     };
@@ -441,7 +441,7 @@ impl_vector!(
 );
 
 impl_vector!(
-    trait Guest = Guest;
+    use Guest;
     type Vector;
 
     // rust-lang/rustfmt#6036
