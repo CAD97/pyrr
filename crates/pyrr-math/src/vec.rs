@@ -1,174 +1,606 @@
-use na::{ComplexField, RealField};
-use std::ops::{Add, Mul, Neg, Sub};
-
-const X1P_20: f64 = 9.536_743_164_062_5e-7; // 2^-20 ≅ 10^-6
-#[allow(clippy::cast_possible_truncation)]
-const X1P_20F: f32 = X1P_20 as f32;
-
-#[allow(clippy::missing_assert_message)]
-const _: () = {
-    assert!(X1P_20 == X1P_20F as f64);
-    assert!(X1P_20 == (1.0 / (1 << 20) as f64));
-    assert!(X1P_20 <= 1.0e-6);
+use std::{
+    mem::{size_of, transmute_copy, ManuallyDrop},
+    ops::{Add, AddAssign, Mul, Neg, Sub, SubAssign},
 };
 
-// TODO: template/generate for other vector types/widths, wow
-impl crate::ffi::vec2f::Guest for crate::ffi::Exports {
-    fn constructor_vec2f(x: f32, y: f32) -> crate::Vec2f {
-        glm::vec2(x, y).into()
+// macro_rules! count_tts {
+//     () => { 0 };
+//     ($odd:tt $($a:tt $b:tt)*) => { (count_tts!($($a)*) << 1) | 1 };
+//     ($($a:tt $even:tt)*) => { count_tts!($($a)*) << 1 };
+// }
+
+macro_rules! decl_vector {{
+    $(#[$type_meta:meta])*
+    $vis:vis struct $Type:ident {$(
+        $(#[$field_meta:meta])*
+        $field:ident
+    ),* $(,)?}
+} => {
+    #[repr(C)]
+    #[derive(Copy, Clone, PartialEq, Eq)]
+    $(#[$type_meta])*
+    $vis struct $Type<T> {$(
+        $(#[$field_meta])*
+        $vis $field: T,
+    )*}
+
+    impl<T> $Type<T> {
+        pub const fn new($($field: T),*) -> Self {
+            Self { $($field),* }
+        }
+    }
+}}
+
+decl_vector! {
+    /// A 2-dimensional vector.
+    ///
+    /// | coordinate space | conventional `x` | conventional `y` |
+    /// | ---------------- | ---------------- | ---------------- |
+    /// | side-on          | forward (right)  | up               |
+    /// | top-down         | east (right)     | north (up)       |
+    /// | texture space    | right            | down             |
+    pub struct Vector2 { x, y }
+}
+
+decl_vector! {
+    /// A 3-dimensional vector.
+    ///
+    /// | coordinate space | conventional `x` | conventional `y` | conventional `z` |
+    /// | ---------------- | ---------------- | ---------------- | ---------------- |
+    /// | local space      | forward          | left             | up               |
+    /// | world space      | north            | west             | up               |
+    /// | view space       | right            | up               | closer           |
+    /// | clip space       | right ∈ [-1, 1]  | up ∈ [-1, 1]     | further ∈ [0, 1] |
+    ///
+    /// <div class="warning">Note that while Pyrr uses a right-handed coordinate system,
+    /// rendering ends up left-handed due to the use of a reverse-z depth. However, this
+    /// should only ever matter when doing clip-space work in shaders.</div>
+    pub struct Vector3 { x, y, z }
+}
+
+macro_rules! impl_vector {{
+    $(mod $guest:ident;)?
+    $(const $N:ident: usize = N;)?
+    type $Vector:ident;
+    $($items:item)*
+} => {
+    const _: () = {
+        const N: usize = 2;
+        type $Vector<T> = Vector2<T>;
+        $(mod $guest {
+            pub(super) use crate::ffi::vec2f::Guest as f32;
+        })?
+        $($items)*
+    };
+    const _: () = {
+        const N: usize = 3;
+        type $Vector<T> = Vector3<T>;
+        $(mod $guest {
+            pub(super) use crate::ffi::vec3f::Guest as f32;
+        })?
+        $($items)*
+    };
+}}
+
+#[allow(unsafe_code)]
+const unsafe fn transmute_prefix<Src, Dst>(src: Src) -> Dst {
+    union Union<Src, Dst> {
+        src: ManuallyDrop<Src>,
+        dst: ManuallyDrop<Dst>,
     }
 
-    fn static_vec2f_splat(v: f32) -> crate::Vec2f {
-        glm::Vec2::repeat(v).into()
-    }
+    let src = ManuallyDrop::new(src);
+    ManuallyDrop::into_inner(Union { src }.dst)
+}
 
-    fn method_vec2f_abs(self_: crate::Vec2f) -> crate::Vec2f {
-        glm::Vec2::from(self_).abs().into()
-    }
+impl_vector!(
+    type Vector;
 
-    fn method_vec2f_neg(self_: crate::Vec2f) -> crate::Vec2f {
-        glm::Vec2::from(self_).neg().into()
-    }
+    impl<T> Vector<T> {
+        #[allow(unsafe_code)]
+        pub const fn as_array(&self) -> &[T; N] {
+            // SAFETY: Vector is repr(C) with N fields of type T
+            unsafe { &*(self as *const Self).cast() }
+        }
 
-    fn method_vec2f_ceil(self_: crate::Vec2f) -> crate::Vec2f {
-        glm::ceil(&glm::Vec2::from(self_)).into()
-    }
+        #[allow(unsafe_code)]
+        pub fn as_mut_array(&mut self) -> &mut [T; N] {
+            // SAFETY: Vector is repr(C) with N fields of type T
+            unsafe { &mut *(self as *mut Self).cast() }
+        }
 
-    fn method_vec2f_floor(self_: crate::Vec2f) -> crate::Vec2f {
-        glm::floor(&glm::Vec2::from(self_)).into()
-    }
+        #[allow(unsafe_code)]
+        pub const fn into_array(self) -> [T; N] {
+            assert!(size_of::<Vector<T>>() == size_of::<[T; N]>());
+            // SAFETY: Vector is repr(C) with N fields of type T
+            unsafe { transmute_prefix(self) }
+        }
 
-    fn method_vec2f_trunc(self_: crate::Vec2f) -> crate::Vec2f {
-        glm::trunc(&glm::Vec2::from(self_)).into()
-    }
+        pub const fn as_slice(&self) -> &[T] {
+            self.as_array().as_slice()
+        }
 
-    fn method_vec2f_fract(self_: crate::Vec2f) -> crate::Vec2f {
-        glm::fract(&glm::Vec2::from(self_)).into()
-    }
+        pub fn as_mut_slice(&mut self) -> &mut [T] {
+            self.as_mut_array()
+        }
 
-    fn method_vec2f_round(self_: crate::Vec2f) -> crate::Vec2f {
-        glm::round(&glm::Vec2::from(self_)).into()
-    }
-
-    fn method_vec2f_signum(self_: crate::Vec2f) -> crate::Vec2f {
-        glm::sign(&glm::Vec2::from(self_)).into()
-    }
-
-    fn method_vec2f_add(self_: crate::Vec2f, rhs: crate::Vec2f) -> crate::Vec2f {
-        glm::Vec2::from(self_).add(&glm::Vec2::from(rhs)).into()
-    }
-
-    fn method_vec2f_sub(self_: crate::Vec2f, rhs: crate::Vec2f) -> crate::Vec2f {
-        glm::Vec2::from(self_).sub(&glm::Vec2::from(rhs)).into()
-    }
-
-    fn method_vec2f_min(self_: crate::Vec2f, rhs: crate::Vec2f) -> crate::Vec2f {
-        glm::min2(&glm::Vec2::from(self_), &glm::Vec2::from(rhs)).into()
-    }
-
-    fn method_vec2f_max(self_: crate::Vec2f, rhs: crate::Vec2f) -> crate::Vec2f {
-        glm::max2(&glm::Vec2::from(self_), &glm::Vec2::from(rhs)).into()
-    }
-
-    fn method_vec2f_copysign(self_: crate::Vec2f, sign: crate::Vec2f) -> crate::Vec2f {
-        glm::Vec2::from(self_)
-            .zip_map(&glm::Vec2::from(sign), RealField::copysign)
-            .into()
-    }
-
-    fn method_vec2f_eq(self_: crate::Vec2f, rhs: crate::Vec2f) -> bool {
-        glm::Vec2::from(self_).eq(&glm::Vec2::from(rhs))
-    }
-
-    fn method_vec2f_ne(self_: crate::Vec2f, rhs: crate::Vec2f) -> bool {
-        glm::Vec2::from(self_).ne(&glm::Vec2::from(rhs))
-    }
-
-    fn method_vec2f_clamp(
-        self_: crate::Vec2f,
-        min: crate::Vec2f,
-        max: crate::Vec2f,
-    ) -> crate::Vec2f {
-        glm::clamp_vec(
-            &glm::Vec2::from(self_),
-            &glm::Vec2::from(min),
-            &glm::Vec2::from(max),
-        )
-        .into()
-    }
-
-    fn method_vec2f_powf(self_: crate::Vec2f, pow: f32) -> crate::Vec2f {
-        glm::Vec2::from(self_)
-            .map(|self_| ComplexField::powf(self_, pow))
-            .into()
-    }
-
-    fn method_vec2f_powi(self_: crate::Vec2f, pow: i32) -> crate::Vec2f {
-        glm::Vec2::from(self_)
-            .map(|self_| ComplexField::powi(self_, pow))
-            .into()
-    }
-
-    fn method_vec2f_recip(self_: crate::Vec2f) -> crate::Vec2f {
-        glm::Vec2::from(self_).map(ComplexField::recip).into()
-    }
-
-    fn method_vec2f_len(self_: crate::Vec2f) -> f32 {
-        glm::Vec2::from(self_).magnitude()
-    }
-
-    fn method_vec2f_len_recip(self_: crate::Vec2f) -> f32 {
-        ComplexField::recip(Self::method_vec2f_len(self_))
-    }
-
-    fn method_vec2f_len_sq(self_: crate::Vec2f) -> f32 {
-        glm::Vec2::from(self_).magnitude_squared()
-    }
-
-    fn method_vec2f_len_sq_recip(self_: crate::Vec2f) -> f32 {
-        ComplexField::recip(Self::method_vec2f_len_sq(self_))
-    }
-
-    fn method_vec2f_normalize(self_: crate::Vec2f) -> crate::Vec2f {
-        match Self::method_vec2f_normalize_or_wild(self_) {
-            it if Self::method_vec2f_is_normalized(it) => it,
-            _ => cold_panic!("attempted to normalize vec2f with length zero"),
+        pub const fn into_glm(self) -> glm::TVec<T, N> {
+            glm::TVec::from_array_storage(na::base::ArrayStorage([self.into_array(); 1]))
         }
     }
 
-    fn method_vec2f_normalize_or_zero(self_: crate::Vec2f) -> crate::Vec2f {
-        match Self::method_vec2f_normalize_or_wild(self_) {
-            it if Self::method_vec2f_is_normalized(it) => it,
-            _ => glm::Vec2::zeros().into(),
+    impl<T> From<[T; N]> for Vector<T> {
+        #[allow(unsafe_code)]
+        fn from(v: [T; N]) -> Self {
+            assert_eq!(size_of::<Vector<T>>(), size_of::<[T; N]>());
+            // SAFETY: Vector is repr(C) with N fields of type T
+            unsafe { transmute_copy(&ManuallyDrop::new(v)) }
         }
     }
 
-    fn method_vec2f_normalize_or_wild(self_: crate::Vec2f) -> crate::Vec2f {
-        glm::Vec2::from(self_).normalize().into()
+    impl<T> From<Vector<T>> for [T; N] {
+        fn from(v: Vector<T>) -> Self {
+            v.into_array()
+        }
     }
 
-    fn method_vec2f_is_normalized(self_: crate::Vec2f) -> bool {
-        Self::method_vec2f_is_normalized_enough(self_, X1P_20F)
+    impl<'a, T> From<&'a Vector<T>> for &'a [T; N] {
+        fn from(v: &'a Vector<T>) -> Self {
+            v.as_array()
+        }
     }
 
-    fn method_vec2f_is_normalized_enough(self_: crate::Vec2f, epsilon: f32) -> bool {
-        glm::is_normalized(&glm::Vec2::from(self_), epsilon)
+    impl<'a, T> From<&'a mut Vector<T>> for &'a mut [T; N] {
+        fn from(v: &'a mut Vector<T>) -> Self {
+            v.as_mut_array()
+        }
     }
 
-    fn method_vec2f_project_onto(self_: crate::Vec2f, onto: crate::Vec2f) -> crate::Vec2f {
-        let onto = glm::Vec2::from(onto);
-        glm::Vec2::from(self_).dot(&onto).mul(onto).into()
+    impl<T> AsRef<[T; N]> for Vector<T> {
+        fn as_ref(&self) -> &[T; N] {
+            self.as_array()
+        }
     }
 
-    fn method_vec2f_reject_from(self_: crate::Vec2f, onto: crate::Vec2f) -> crate::Vec2f {
-        Self::method_vec2f_sub(self_, Self::method_vec2f_project_onto(self_, onto))
+    impl<T> AsMut<[T; N]> for Vector<T> {
+        fn as_mut(&mut self) -> &mut [T; N] {
+            self.as_mut_array()
+        }
     }
 
-    fn method_vec2f_is_nan(self_: crate::Vec2f) -> bool {
-        glm::any(&glm::Vec2::from(self_).map(f32::is_nan))
+    impl<T> From<Vector<T>> for glm::TVec<T, N> {
+        fn from(v: Vector<T>) -> Self {
+            v.into_glm()
+        }
     }
 
-    fn method_vec2f_is_finite(self_: crate::Vec2f) -> bool {
-        glm::all(&glm::Vec2::from(self_).map(|self_| ComplexField::is_finite(&self_)))
+    impl<T> From<glm::TVec<T, N>> for Vector<T> {
+        fn from(v: glm::TVec<T, N>) -> Self {
+            let (a,) = v.data.0.into();
+            a.into()
+        }
+    }
+
+    impl<T: glm::Scalar> simba::scalar::SubsetOf<glm::TVec<T, N>> for Vector<T> {
+        fn to_superset(&self) -> glm::TVec<T, N> {
+            self.clone().into()
+        }
+
+        fn is_in_subset(_: &glm::TVec<T, N>) -> bool {
+            true
+        }
+
+        fn from_superset_unchecked(v: &glm::TVec<T, N>) -> Self {
+            v.clone().into()
+        }
+    }
+
+    impl<T: glm::Scalar> simba::scalar::SubsetOf<Vector<T>> for glm::TVec<T, N> {
+        fn to_superset(&self) -> Vector<T> {
+            self.clone().into()
+        }
+
+        fn is_in_subset(_: &Vector<T>) -> bool {
+            true
+        }
+
+        fn from_superset_unchecked(v: &Vector<T>) -> Self {
+            v.clone().into()
+        }
+    }
+
+    impl<T: Scalar> Neg for Vector<T> {
+        type Output = Self;
+        fn neg(self) -> Self {
+            <[T; N]>::from(self).map(Neg::neg).into()
+        }
+    }
+
+    impl<T: Scalar> AddAssign for Vector<T> {
+        fn add_assign(&mut self, rhs: Self) {
+            for (this, rhs) in self.as_mut_slice().iter_mut().zip(<[T; N]>::from(rhs)) {
+                *this += rhs;
+            }
+        }
+    }
+
+    impl<T: Scalar> Add for Vector<T> {
+        type Output = Self;
+        fn add(mut self, rhs: Self) -> Self {
+            self += rhs;
+            self
+        }
+    }
+
+    impl<T: Scalar> SubAssign for Vector<T> {
+        fn sub_assign(&mut self, rhs: Self) {
+            for (this, rhs) in self.as_mut_slice().iter_mut().zip(<[T; N]>::from(rhs)) {
+                *this -= rhs;
+            }
+        }
+    }
+
+    impl<T: Scalar> Sub for Vector<T> {
+        type Output = Self;
+        fn sub(mut self, rhs: Self) -> Self {
+            self -= rhs;
+            self
+        }
+    }
+);
+
+impl<T> mint::IntoMint for Vector2<T> {
+    type MintType = mint::Vector2<T>;
+}
+
+impl<T> From<mint::Vector2<T>> for Vector2<T> {
+    fn from(v: mint::Vector2<T>) -> Self {
+        Self::new(v.x, v.y)
     }
 }
+
+impl<T> From<Vector2<T>> for mint::Vector2<T> {
+    fn from(v: Vector2<T>) -> Self {
+        let Vector2 { x, y } = v;
+        Self { x, y }
+    }
+}
+
+impl<T> mint::IntoMint for Vector3<T> {
+    type MintType = mint::Vector3<T>;
+}
+
+impl<T> From<mint::Vector3<T>> for Vector3<T> {
+    fn from(v: mint::Vector3<T>) -> Self {
+        Self::new(v.x, v.y, v.z)
+    }
+}
+
+impl<T> From<Vector3<T>> for mint::Vector3<T> {
+    fn from(v: Vector3<T>) -> Self {
+        let Vector3 { x, y, z } = v;
+        Self { x, y, z }
+    }
+}
+
+impl_vector!(
+    type Vector;
+
+    impl<T: Scalar> Vector<T> {
+        pub fn splat(v: T) -> Self {
+            glm::TVec::<T, N>::repeat(v).into()
+        }
+
+        pub fn abs(self) -> Self {
+            glm::TVec::<T, N>::from(self).abs().into()
+        }
+
+        pub fn signum(self) -> Self {
+            glm::sign(&glm::TVec::<T, N>::from(self)).into()
+        }
+
+        pub fn min(self, rhs: Self) -> Self {
+            glm::min2(
+                &glm::TVec::<T, N>::from(self),
+                &glm::TVec::<T, N>::from(rhs),
+            )
+            .into()
+        }
+
+        pub fn max(self, rhs: Self) -> Self {
+            glm::max2(
+                &glm::TVec::<T, N>::from(self),
+                &glm::TVec::<T, N>::from(rhs),
+            )
+            .into()
+        }
+
+        pub fn clamp(self, min: Self, max: Self) -> Self {
+            glm::clamp_vec(
+                &glm::TVec::<T, N>::from(self),
+                &glm::TVec::<T, N>::from(min),
+                &glm::TVec::<T, N>::from(max),
+            )
+            .into()
+        }
+    }
+);
+
+impl_vector!(
+    type Vector;
+
+    impl Vector<f32> {
+        pub fn ceil(self) -> Self {
+            glm::ceil(&glm::TVec::<f32, N>::from(self)).into()
+        }
+
+        pub fn floor(self) -> Self {
+            glm::floor(&glm::TVec::<f32, N>::from(self)).into()
+        }
+
+        pub fn trunc(self) -> Self {
+            glm::trunc(&glm::TVec::<f32, N>::from(self)).into()
+        }
+
+        pub fn fract(self) -> Self {
+            glm::fract(&glm::TVec::<f32, N>::from(self)).into()
+        }
+
+        pub fn round(self) -> Self {
+            glm::round(&glm::TVec::<f32, N>::from(self)).into()
+        }
+
+        pub fn copysign(self, sign: Self) -> Self {
+            glm::TVec::<f32, N>::from(self)
+                .zip_map(&glm::TVec::<f32, N>::from(sign), na::RealField::copysign)
+                .into()
+        }
+
+        pub fn powf(self, pow: f32) -> Self {
+            glm::TVec::<f32, N>::from(self)
+                .map(|this| na::ComplexField::powf(this, pow))
+                .into()
+        }
+
+        pub fn powi(self, pow: i32) -> Self {
+            glm::TVec::<f32, N>::from(self)
+                .map(|this| na::ComplexField::powi(this, pow))
+                .into()
+        }
+
+        pub fn recip(self) -> Self {
+            glm::TVec::<f32, N>::from(self)
+                .map(na::ComplexField::recip)
+                .into()
+        }
+
+        pub fn len(self) -> f32 {
+            glm::TVec::<f32, N>::from(self).magnitude()
+        }
+
+        pub fn len_recip(self) -> f32 {
+            na::ComplexField::recip(Self::len(self))
+        }
+
+        pub fn len_sq(self) -> f32 {
+            glm::TVec::<f32, N>::from(self).magnitude_squared()
+        }
+
+        pub fn len_sq_recip(self) -> f32 {
+            na::ComplexField::recip(Self::len_sq(self))
+        }
+
+        pub fn normalize(self) -> Self {
+            match Self::normalize_or_wild(self) {
+                it if Self::is_normalized(it) => it,
+                _ => cold_panic!("attempted to normalize vector with length zero"),
+            }
+        }
+
+        pub fn normalize_or_zero(self) -> Self {
+            match Self::normalize_or_wild(self) {
+                it if Self::is_normalized(it) => it,
+                _ => glm::TVec::<f32, N>::zeros().into(),
+            }
+        }
+
+        pub fn normalize_or_wild(self) -> Self {
+            glm::TVec::<f32, N>::from(self).normalize().into()
+        }
+
+        pub fn is_normalized(self) -> bool {
+            const X1P_20: f32 = 9.536_743e-7; // 2^-20 ≅ 10^-6
+            #[allow(clippy::cast_precision_loss)]
+            const _: () = assert!(X1P_20 == (1.0 / (1 << 20) as f32));
+            Self::is_normalized_enough(self, X1P_20)
+        }
+
+        pub fn is_normalized_enough(self, epsilon: f32) -> bool {
+            glm::is_normalized(&glm::TVec::<f32, N>::from(self), epsilon)
+        }
+
+        pub fn project_onto(self, onto: Self) -> Self {
+            let onto = glm::TVec::<f32, N>::from(onto);
+            onto.mul(glm::TVec::<f32, N>::from(self).dot(&onto)).into()
+        }
+
+        pub fn reject_from(self, onto: Self) -> Self {
+            Self::sub(self, Self::project_onto(self, onto))
+        }
+
+        pub fn is_nan(self) -> bool {
+            glm::any(&glm::TVec::<f32, N>::from(self).map(f32::is_nan))
+        }
+
+        pub fn is_finite(self) -> bool {
+            glm::all(
+                &glm::TVec::<f32, N>::from(self).map(|this| na::ComplexField::is_finite(&this)),
+            )
+        }
+    }
+);
+
+impl_vector!(
+    mod guest;
+    type Vector;
+
+    impl guest::f32 for Vector<f32> {
+        fn static_splat(v: f32) -> Self {
+            Self::splat(v)
+        }
+
+        fn method_abs(this: Self) -> Self {
+            this.abs()
+        }
+
+        fn method_neg(this: Self) -> Self {
+            this.neg()
+        }
+
+        fn method_ceil(this: Self) -> Self {
+            this.ceil()
+        }
+
+        fn method_floor(this: Self) -> Self {
+            this.floor()
+        }
+
+        fn method_trunc(this: Self) -> Self {
+            this.trunc()
+        }
+
+        fn method_fract(this: Self) -> Self {
+            this.fract()
+        }
+
+        fn method_round(this: Self) -> Self {
+            this.round()
+        }
+
+        fn method_signum(this: Self) -> Self {
+            this.signum()
+        }
+
+        fn method_add(this: Self, rhs: Self) -> Self {
+            this.add(rhs)
+        }
+
+        fn method_sub(this: Self, rhs: Self) -> Self {
+            this.sub(rhs)
+        }
+
+        fn method_min(this: Self, rhs: Self) -> Self {
+            this.min(rhs)
+        }
+
+        fn method_max(this: Self, rhs: Self) -> Self {
+            this.max(rhs)
+        }
+
+        fn method_copysign(this: Self, sign: Self) -> Self {
+            this.copysign(sign)
+        }
+
+        fn method_eq(this: Self, rhs: Self) -> bool {
+            this.eq(&rhs)
+        }
+
+        fn method_ne(this: Self, rhs: Self) -> bool {
+            this.ne(&rhs)
+        }
+
+        fn method_clamp(this: Self, min: Self, max: Self) -> Self {
+            this.clamp(min, max)
+        }
+
+        fn method_powf(this: Self, pow: f32) -> Self {
+            this.powf(pow)
+        }
+
+        fn method_powi(this: Self, pow: i32) -> Self {
+            this.powi(pow)
+        }
+
+        fn method_recip(this: Self) -> Self {
+            this.recip()
+        }
+
+        fn method_len(this: Self) -> f32 {
+            this.len()
+        }
+
+        fn method_len_recip(this: Self) -> f32 {
+            this.len_recip()
+        }
+
+        fn method_len_sq(this: Self) -> f32 {
+            this.len_sq()
+        }
+
+        fn method_len_sq_recip(this: Self) -> f32 {
+            this.len_sq_recip()
+        }
+
+        fn method_normalize(this: Self) -> Self {
+            this.normalize()
+        }
+
+        fn method_normalize_or_zero(this: Self) -> Self {
+            this.normalize_or_zero()
+        }
+
+        fn method_normalize_or_wild(this: Self) -> Self {
+            this.normalize_or_wild()
+        }
+
+        fn method_is_normalized(this: Self) -> bool {
+            this.is_normalized()
+        }
+
+        fn method_is_normalized_enough(this: Self, epsilon: f32) -> bool {
+            this.is_normalized_enough(epsilon)
+        }
+
+        fn method_project_onto(this: Self, onto: Self) -> Self {
+            this.project_onto(onto)
+        }
+
+        fn method_reject_from(this: Self, onto: Self) -> Self {
+            this.reject_from(onto)
+        }
+
+        fn method_is_nan(this: Self) -> bool {
+            this.is_nan()
+        }
+
+        fn method_is_finite(this: Self) -> bool {
+            this.is_finite()
+        }
+    }
+);
+
+/// A 2-dimensional vector.
+pub type Vec2<T> = Vector2<T>;
+/// A 3-dimensional vector.
+pub type Vec3<T> = Vector3<T>;
+
+/// A 2-dimensional vector of `f32`s.
+pub type Vec2f = Vector2<f32>;
+/// A 3-dimensional vector of `f32`s.
+pub type Vec3f = Vector3<f32>;
+
+/// A 2-dimensional vector of `i32`s.
+pub type Vec2i = Vector2<i32>;
+/// A 3-dimensional vector of `i32`s.
+pub type Vec3i = Vector3<i32>;
+
+/// A 2-dimensional vector of `bool`s.
+pub type Vec2b = Vector2<bool>;
+/// A 3-dimensional vector of `bool`s.
+pub type Vec3b = Vector3<bool>;
+
+/// A number, either `f32` or `i32`.
+pub trait Scalar: glm::Number {}
+
+impl Scalar for f32 {}
+impl Scalar for i32 {}

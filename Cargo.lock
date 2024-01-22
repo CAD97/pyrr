@@ -108,6 +108,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "mint"
+version = "0.5.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e53debba6bda7a793e5f99b8dacf19e626084f525f7829104ba9898f367d85ff"
+
+[[package]]
 name = "nalgebra"
 version = "0.32.3"
 source = "git+https://github.com/CAD97/nalgebra?branch=patch-3#f5781813519883fd6c299a2ee31523942ead0a61"
@@ -195,8 +201,10 @@ name = "pyrr-math"
 version = "0.0.0"
 dependencies = [
  "libm",
+ "mint",
  "nalgebra",
  "nalgebra-glm",
+ "simba",
  "wit-bindgen",
 ]
 
@@ -278,6 +286,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "061507c94fc6ab4ba1c9a0305018408e312e17c041eb63bef8aa726fa33aceae"
 dependencies = [
  "approx",
+ "libm",
  "num-complex",
  "num-traits",
  "paste",

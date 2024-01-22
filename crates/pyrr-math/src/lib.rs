@@ -4,11 +4,12 @@ mod wit {
         world: "exports",
         exports: {
             "pyrr:math/libm": Exports,
-            "pyrr:math/vec2f": Exports,
+            "pyrr:math/vec2f": super::Vec2f,
+            "pyrr:math/vec3f": super::Vec3f,
         },
         with: {
-            "pyrr:math/types": super::types,
-        }
+            "pyrr:math/vec": super::vec,
+        },
     });
 }
 
@@ -24,7 +25,6 @@ macro_rules! cold_panic {
 }
 
 mod libm;
-mod types;
 mod vec;
 
-pub use self::{libm::*, types::*, vec::*};
+pub use self::{libm::*, vec::*};

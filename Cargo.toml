@@ -59,7 +59,7 @@ features = []
 package = "nalgebra"
 version = "0.32.3"
 default-features = false
-features = ["std"]
+features = ["std", "libm-force"]
 
 [workspace.dependencies.paste]
 version = "1.0.14"
@@ -75,6 +75,11 @@ features = ["std", "min_const_gen"]
 version = "0.17.2"
 default-features = false
 features = ["dim2", "f32", "enhanced-determinism"]
+
+[workspace.dependencies.simba]
+version = "0.8.1"
+default-features = false
+features = ["std", "libm_force"]
 
 [workspace.dependencies.wasmtime]
 version = "16.0.0"

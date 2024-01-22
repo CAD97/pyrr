@@ -1,8 +1,0 @@
-package pyrr:math;
-
-interface types {
-    record vec2f {
-        x: float32,
-        y: float32,
-    }
-}

@@ -1,49 +1,110 @@
 package pyrr:math;
 
+interface vec {
+    record vec2f {
+        x: float32,
+        y: float32,
+    }
+
+    record vec3f {
+        x: float32,
+        y: float32,
+        z: float32,
+    }
+}
+
 interface vec2f {
-    use types.{vec2f};
+    use vec.{vec2f};
 
-    constructor-vec2f: func(x: float32, y: float32) -> vec2f;
-    static-vec2f-splat: func(v: float32) -> vec2f;
+    // %constructor: func(x: float32, y: float32) -> vec2f;
+    static-splat: func(v: float32) -> vec2f;
 
-    method-vec2f-abs: func(self: vec2f) -> vec2f;
-    method-vec2f-neg: func(self: vec2f) -> vec2f;
-    method-vec2f-ceil: func(self: vec2f) -> vec2f;
-    method-vec2f-floor: func(self: vec2f) -> vec2f;
-    method-vec2f-trunc: func(self: vec2f) -> vec2f;
-    method-vec2f-fract: func(self: vec2f) -> vec2f;
-    method-vec2f-round: func(self: vec2f) -> vec2f;
-    method-vec2f-signum: func(self: vec2f) -> vec2f;
+    method-abs: func(self: vec2f) -> vec2f;
+    method-neg: func(self: vec2f) -> vec2f;
+    method-ceil: func(self: vec2f) -> vec2f;
+    method-floor: func(self: vec2f) -> vec2f;
+    method-trunc: func(self: vec2f) -> vec2f;
+    method-fract: func(self: vec2f) -> vec2f;
+    method-round: func(self: vec2f) -> vec2f;
+    method-signum: func(self: vec2f) -> vec2f;
 
-    method-vec2f-add: func(self: vec2f, rhs: vec2f) -> vec2f;
-    method-vec2f-sub: func(self: vec2f, rhs: vec2f) -> vec2f;
-    method-vec2f-min: func(self: vec2f, rhs: vec2f) -> vec2f;
-    method-vec2f-max: func(self: vec2f, rhs: vec2f) -> vec2f;
-    method-vec2f-copysign: func(self: vec2f, sign: vec2f) -> vec2f;
+    method-add: func(self: vec2f, rhs: vec2f) -> vec2f;
+    method-sub: func(self: vec2f, rhs: vec2f) -> vec2f;
+    method-min: func(self: vec2f, rhs: vec2f) -> vec2f;
+    method-max: func(self: vec2f, rhs: vec2f) -> vec2f;
+    method-copysign: func(self: vec2f, sign: vec2f) -> vec2f;
 
-    method-vec2f-eq: func(self: vec2f, rhs: vec2f) -> bool;
-    method-vec2f-ne: func(self: vec2f, rhs: vec2f) -> bool;
+    method-eq: func(self: vec2f, rhs: vec2f) -> bool;
+    method-ne: func(self: vec2f, rhs: vec2f) -> bool;
 
-    method-vec2f-clamp: func(self: vec2f, min: vec2f, max: vec2f) -> vec2f;
+    method-clamp: func(self: vec2f, min: vec2f, max: vec2f) -> vec2f;
 
-    method-vec2f-powf: func(self: vec2f, pow: float32) -> vec2f;
-    method-vec2f-powi: func(self: vec2f, pow: s32) -> vec2f;
+    method-powf: func(self: vec2f, pow: float32) -> vec2f;
+    method-powi: func(self: vec2f, pow: s32) -> vec2f;
 
-    method-vec2f-recip: func(self: vec2f) -> vec2f;
-    method-vec2f-len: func(self: vec2f) -> float32;
-    method-vec2f-len-recip: func(self: vec2f) -> float32;
-    method-vec2f-len-sq: func(self: vec2f) -> float32;
-    method-vec2f-len-sq-recip: func(self: vec2f) -> float32;
+    method-recip: func(self: vec2f) -> vec2f;
+    method-len: func(self: vec2f) -> float32;
+    method-len-recip: func(self: vec2f) -> float32;
+    method-len-sq: func(self: vec2f) -> float32;
+    method-len-sq-recip: func(self: vec2f) -> float32;
 
-    method-vec2f-normalize: func(self: vec2f) -> vec2f;
-    method-vec2f-normalize-or-zero: func(self: vec2f) -> vec2f;
-    method-vec2f-normalize-or-wild: func(self: vec2f) -> vec2f;
-    method-vec2f-is-normalized: func(self: vec2f) -> bool;
-    method-vec2f-is-normalized-enough: func(self: vec2f, epsilon: float32) -> bool;
+    method-normalize: func(self: vec2f) -> vec2f;
+    method-normalize-or-zero: func(self: vec2f) -> vec2f;
+    method-normalize-or-wild: func(self: vec2f) -> vec2f;
+    method-is-normalized: func(self: vec2f) -> bool;
+    method-is-normalized-enough: func(self: vec2f, epsilon: float32) -> bool;
 
-    method-vec2f-project-onto: func(self: vec2f, onto: vec2f) -> vec2f;
-    method-vec2f-reject-from: func(self: vec2f, onto: vec2f) -> vec2f;
+    method-project-onto: func(self: vec2f, onto: vec2f) -> vec2f;
+    method-reject-from: func(self: vec2f, onto: vec2f) -> vec2f;
 
-    method-vec2f-is-nan: func(self: vec2f) -> bool;
-    method-vec2f-is-finite: func(self: vec2f) -> bool;
+    method-is-nan: func(self: vec2f) -> bool;
+    method-is-finite: func(self: vec2f) -> bool;
+}
+
+interface vec3f {
+    use vec.{vec3f};
+
+    // %constructor: func(x: float32, y: float32, z: float32) -> vec3f;
+    static-splat: func(v: float32) -> vec3f;
+
+    method-abs: func(self: vec3f) -> vec3f;
+    method-neg: func(self: vec3f) -> vec3f;
+    method-ceil: func(self: vec3f) -> vec3f;
+    method-floor: func(self: vec3f) -> vec3f;
+    method-trunc: func(self: vec3f) -> vec3f;
+    method-fract: func(self: vec3f) -> vec3f;
+    method-round: func(self: vec3f) -> vec3f;
+    method-signum: func(self: vec3f) -> vec3f;
+
+    method-add: func(self: vec3f, rhs: vec3f) -> vec3f;
+    method-sub: func(self: vec3f, rhs: vec3f) -> vec3f;
+    method-min: func(self: vec3f, rhs: vec3f) -> vec3f;
+    method-max: func(self: vec3f, rhs: vec3f) -> vec3f;
+    method-copysign: func(self: vec3f, sign: vec3f) -> vec3f;
+
+    method-eq: func(self: vec3f, rhs: vec3f) -> bool;
+    method-ne: func(self: vec3f, rhs: vec3f) -> bool;
+
+    method-clamp: func(self: vec3f, min: vec3f, max: vec3f) -> vec3f;
+
+    method-powf: func(self: vec3f, pow: float32) -> vec3f;
+    method-powi: func(self: vec3f, pow: s32) -> vec3f;
+
+    method-recip: func(self: vec3f) -> vec3f;
+    method-len: func(self: vec3f) -> float32;
+    method-len-recip: func(self: vec3f) -> float32;
+    method-len-sq: func(self: vec3f) -> float32;
+    method-len-sq-recip: func(self: vec3f) -> float32;
+
+    method-normalize: func(self: vec3f) -> vec3f;
+    method-normalize-or-zero: func(self: vec3f) -> vec3f;
+    method-normalize-or-wild: func(self: vec3f) -> vec3f;
+    method-is-normalized: func(self: vec3f) -> bool;
+    method-is-normalized-enough: func(self: vec3f, epsilon: float32) -> bool;
+
+    method-project-onto: func(self: vec3f, onto: vec3f) -> vec3f;
+    method-reject-from: func(self: vec3f, onto: vec3f) -> vec3f;
+
+    method-is-nan: func(self: vec3f) -> bool;
+    method-is-finite: func(self: vec3f) -> bool;
 }
