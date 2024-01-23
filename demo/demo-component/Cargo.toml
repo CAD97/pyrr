@@ -1,0 +1,14 @@
+lints.workspace = true
+
+[package]
+name = "pyrr-demo-component"
+edition = "2021"
+
+version.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+wit-bindgen.workspace = true
+
+[lib]
+crate-type = ["cdylib"]

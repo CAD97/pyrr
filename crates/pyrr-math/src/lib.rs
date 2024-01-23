@@ -4,8 +4,8 @@ mod wit {
         world: "exports",
         exports: {
             "pyrr:math/libm": Exports,
-            "pyrr:math/vec2f": super::Vec2f,
-            "pyrr:math/vec3f": super::Vec3f,
+            "pyrr:math/vec2f-methods": super::Vec2f,
+            "pyrr:math/vec3f-methods": super::Vec3f,
         },
         with: {
             "pyrr:math/vec": super::vec,

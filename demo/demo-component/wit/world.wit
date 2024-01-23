@@ -1,0 +1,12 @@
+package pyrr:demo;
+
+interface component {
+    use pyrr:math/vec.{vec2f};
+    run: func(a: vec2f, b: vec2f) -> vec2f;
+}
+
+world exports {
+    include pyrr:math/imports;
+    export component;
+}
+

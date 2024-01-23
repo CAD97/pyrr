@@ -13,7 +13,7 @@ interface vec {
     }
 }
 
-interface vec2f {
+interface vec2f-methods {
     use vec.{vec2f};
 
     // %constructor: func(x: float32, y: float32) -> vec2f;
@@ -61,7 +61,7 @@ interface vec2f {
     method-is-finite: func(self: vec2f) -> bool;
 }
 
-interface vec3f {
+interface vec3f-methods {
     use vec.{vec3f};
 
     // %constructor: func(x: float32, y: float32, z: float32) -> vec3f;

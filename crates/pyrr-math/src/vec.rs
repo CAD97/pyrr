@@ -66,13 +66,13 @@ macro_rules! impl_vector {{
 } => {
     const _: () = {
         $(const $N: usize = 2;)?
-        $(use crate::ffi::vec2f::Guest $(as $Guest)?;)?
+        $(use crate::ffi::vec2f_methods::Guest $(as $Guest)?;)?
         type $Vector<T> = Vector2<T>;
         $($items)*
     };
     const _: () = {
         $(const $N: usize = 3;)?
-        $(use crate::ffi::vec3f::Guest $(as $Guest)?;)?
+        $(use crate::ffi::vec3f_methods::Guest $(as $Guest)?;)?
         type $Vector<T> = Vector3<T>;
         $($items)*
     };

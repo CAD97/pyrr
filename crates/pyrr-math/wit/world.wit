@@ -1,0 +1,15 @@
+package pyrr:math;
+
+world exports {
+    export libm;
+    export vec;
+    export vec2f-methods;
+    export vec3f-methods;
+}
+
+world imports {
+    import libm;
+    import vec;
+    import vec2f-methods;
+    import vec3f-methods;
+}
