@@ -18,8 +18,11 @@ aimed at downstream development users of the engine will be provided at a later 
 ## Build prerequisites
 
 The only strictly required prerequisite is the most recent Rust toolchain, acquired via [rustup].
-Additional optional build scripting support is provided through a [nushell] toolkit.
+Additional optional build scripting support is provided through a [nushell] toolkit: `use toolkit.nu`
+and then help should explain what the toolkit can do. The toolkit uses some additional tooling, and
+if it isn't available, will prompt you for installation via [cargo-binstall] or manually as needed.
 
+[cargo-binstall]: <https://github.com/cargo-bins/cargo-binstall>
 [rustup]: <https://rustup.rs/>
 [nushell]: <https://www.nushell.sh/>
 
