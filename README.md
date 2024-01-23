@@ -1,7 +1,8 @@
 # Pyrr Game Engine
 
 <img src="https://github.com/CAD97/pyrr/assets/5992217/ae01bb46-1388-46eb-b31b-1fc417ce0bdf" align="left"></img>
-Pyrr is a *highly experimental* game framework/engine built around the [WASM Component Model].
+Pyrr is a *highly experimental* and ***incomplete, borderline nonfunctional***
+game framework/engine built around the [WASM Component Model].
 Engine code is written in Rust using an ECS design similar to [Bevy]'s, but game code is
 written in any component model compatible guest language with a familiar object oriented shape.
 Pyrr is at the moment a highly incomplete research project unfit for any use, and the author
