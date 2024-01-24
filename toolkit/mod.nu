@@ -9,12 +9,15 @@ export def main [] {
     } catch {
         error make {
             msg: 'cannot run toolkit module'
-            help: $'you probably want ($"\(use ($env.PROCESS_PATH))" | nu-highlight)'
+            help: $'you probably want ("(use toolkit)" | nu-highlight)'
         }
     }
 }
 
-use std
+alias core-help = help
+def help [...args] {
+    try { use std; std help toolkit ...$args } catch { core-help ...$args }
+}
 
 # Get metadata about the project workspace.
 export def workspace [] {
@@ -28,6 +31,7 @@ export def workspace [] {
     }
 }
 
+# Get metadata about a specific workspace member.
 export def "workspace member" [member: string, key?: string] {
     let out = workspace | get members | where name == $member | get 0?
     if ($out == null) {
@@ -52,76 +56,26 @@ def > --wrapped [command: string, ...args] {
     run-external $command ...$args
 }
 
-def "ensure rust-target" [target: string, --toolchain: string] {
-    let flags = if ($toolchain | is-empty) { [] } else { [--toolchain $toolchain] }
-    let install_args = [target add $target ...$flags]
-    let targets = ^rustup target list --installed ...$flags | lines
-    if $target in $targets { return }
-
-    if $nu.is-interactive {
-        if ([no yes] | input list $'rustup target ($target) missing; install it?') =~ 'y' {
-            > rustup ...$install_args
-            return
-        }
-    }
-
-    error make {
-        msg: $'rustup target ($target) is not installed'
-        help: $'available via ($"\(rustup ($install_args | str join ` `)\)" | nu-highlight)'
-    }
-}
-
-def "ensure rust-toolchain" [toolchain: string] {
-    let install_args = [toolchain add $toolchain]
-    if (do { rustup run $toolchain rustup -V } | complete).exit_code == 0 { return }
-
-    if $nu.is-interactive {
-        if ([no yes] | input list $'rustup toolchain ($toolchain) missing; install it') =~ 'y' {
-            > rustup ...$install_args
-            return
-        }
-    }
-
-    error make {
-        msg: $'rustup toolchain ($toolchain) is not installed'
-        help: $'available via ($"\(rustup ($install_args | str join ` `))" | nu-highlight)'
-    }
-}
-
-def "ensure cargo-tool" [tool: string, package?: string] {
-    if not (which $tool | is-empty) { return }
-    let package = $package | default $tool;
-
-    if $nu.is-interactive and (not (which cargo-binstall | is-empty)) {
-        > cargo binstall $package
-        return
-    }
-
-    error make {
-        msg: $"($tool) not found"
-        help: $'available via ($"\(cargo install ($package))" | nu-highlight)'
-    }
-}
+use ensure.nu
 
 # Build components of the pyrr project.
 export def build [] {
     return (help build)
 }
 
-# Build the wasm components of the pyrr project.
-export def `build wasm` [
+# Build wasm components of the pyrr project.
+export def "build wasm" [
     --all       # build all wasm components
     --demo      # build demo-component
     --math      # build pyrr-math
     --keep-temp # keep transient artifacts
 ] {
     if (not $all or $math or $demo) {
-        return (try { std help toolkit build wasm } catch { help build wasm })
+        return (help build wasm)
     }
 
     ensure rust-toolchain nightly
     ensure rust-target wasm32-unknown-unknown --toolchain nightly
-
     ensure cargo-tool wasm-tools
     ensure cargo-tool wasm-opt
 
@@ -157,4 +111,3 @@ export def `build wasm` [
         print ($"    \(wasm-tools compose `($comp_wasm)`\n        -d `($math_wasm)` -o test.wasm)" | nu-highlight)
     }
 }
-
