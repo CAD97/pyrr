@@ -61,7 +61,7 @@ def ensure-cargo-tool [tool: string, package?: string] {
     if not (which $tool | is-empty) { return }
     let package = $package | default $tool;
 
-    if $nu.is-interactive and (which cargo-binstall) {
+    if $nu.is-interactive and (not (which cargo-binstall | is-empty)) {
         > cargo binstall $package
     }
 
