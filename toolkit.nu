@@ -10,7 +10,7 @@ export def main [--help] {
                 text: "invoked here"
                 span: (metadata $help).span
             }
-            help: $"you probably want `('use ($env.PROCESS_PATH)' | nu-highlight)`"
+            help: $"you probably want `($'use ($env.PROCESS_PATH)' | nu-highlight)`"
         }
     }
 }
