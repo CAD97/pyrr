@@ -63,6 +63,7 @@ def ensure-cargo-tool [tool: string, package?: string] {
 
     if $nu.is-interactive and (not (which cargo-binstall | is-empty)) {
         > cargo binstall $package
+        return
     }
 
     error make {
