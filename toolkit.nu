@@ -54,7 +54,7 @@ def ? --wrapped [command: string, ...args] {
 
 def > --wrapped [command: string, ...args] {
     print ([$"(ansi attr_dimmed)>" $command ...$args (ansi reset)] | str join " ")
-    run-external $command $args
+    run-external $command ...$args
 }
 
 def ensure-cargo-tool [tool: string, package?: string] {
